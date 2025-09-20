@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام متابعة درجات الطالبات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #E0F2F1 0%, #B2DFDB 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header-card {
+            background: linear-gradient(135deg, #00897B, #00A693);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,139,123,0.3);
+        }
+        
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 400;
+        }
+        
+        .control-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,139,123,0.2);
+        }
+        
+        .control-card h2 {
+            color: #005B6E;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 400;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .control-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .control-item label {
+            color: #005B6E;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+        
+        .control-item select, 
+        .control-item input {
+            padding: 12px;
+            border: 2px solid #E0F2F1;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        .control-item select:focus,
+        .control-item input:focus {
+            outline: none;
+            border-color: #00897B;
+            box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.1);
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .btn-primary {
+            background: #00A693;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #005B6E;
+            color: white;
+        }
+        
+        .btn-info {
+            background: #00897B;
+            color: white;
+        }
+        
+        .btn-light {
+            background: #E0F2F1;
+            color: #005B6E;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 10px 10px 0 0;
+            position: relative;
+        }
+        
+        .tab-btn.active {
+            color: #00897B;
+            background: #E0F2F1;
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #00897B;
+            border-radius: 2px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .week-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .week-btn {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .week-btn.active {
+            background: linear-gradient(135deg, #00897B, #00A693);
+            color: white;
+            border-color: transparent;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background: #00897B;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            background: white;
+        }
+        
+        tr:hover td {
+            background: #f9fafb;
+        }
+        
+        .grade-input {
+            width: 50px;
+            padding: 5px;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .grade-input:focus {
+            outline: none;
+            border-color: #00897B;
+            box-shadow: 0 0 0 2px rgba(0, 137, 123, 0.1);
+        }
+        
+        .student-name-input {
+            width: 100%;
+            min-width: 200px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+        }
+        
+        .delete-btn {
+            background: transparent;
+            color: #dc2626;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        
+        .delete-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .total-badge {
+            background: #00897B;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            min-width: 30px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .summary-card h3 {
+            color: #374151;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00897B;
+        }
+        
+        #bulkAddModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        #bulkAddModal .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+        }
+        
+        #weeklyTableContainer {
+            overflow-x: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .header-card h1 {
+                font-size: 1.5em;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                min-width: 1200px;
+            }
+            
+            .grade-input {
+                width: 40px;
+            }
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .control-card,
+            .action-buttons,
+            .tabs-container,
+            .week-selector,
+            .delete-btn {
+                display: none;
+            }
+        }
+    </style>
+<meta name="theme-color" content="#00897B">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-card">
+            <h1>متابعة درجات الطالبات</h1>
+        </div>
+        
+        <div class="control-card">
+            <h2>اختيار المجموعة</h2>
+            <div class="controls-grid">
+                <div class="control-item">
+                    <label>الصف:</label>
+                    <select id="gradeSelect">
+                        <option value="1">أول ثانوي</option>
+                        <option value="2">ثاني ثانوي</option>
+                        <option value="3">ثالث ثانوي</option>
+                    </select>
+                </div>
+                
+                <div class="control-item">
+                    <label>الشعبة:</label>
+                    <select id="sectionSelect">
+                        <option value="1">الشعبة 1</option>
+                        <option value="2">الشعبة 2</option>
+                        <option value="3">الشعبة 3</option>
+                        <option value="4">الشعبة 4</option>
+                    </select>
+                </div>
+                
+                <div class="control-item">
+                    <label>الفترة:</label>
+                    <select id="periodSelect">
+                        <option value="1">الفترة الأولى</option>
+                        <option value="2">الفترة الثانية</option>
+                    </select>
+                </div>
+                
+                <div class="control-item">
+                    <label>اسم الطالبة:</label>
+                    <input type="text" id="studentNameInput" placeholder="أدخلي اسم الطالبة">
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="addBtn">➕ إضافة طالبة</button>
+                <button class="btn btn-secondary" id="bulkBtn">📝 إضافة مجموعة</button>
+                <button class="btn btn-info" id="saveBtn">💾 حفظ البيانات</button>
+                <button class="btn btn-info" id="excelBtn">📊 تصدير Excel</button>
+                <button class="btn btn-light" id="printBtn">🖨️ طباعة التقرير</button>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <div class="tabs-container">
+                <button class="tab-btn active" data-tab="weekly">المتابعة الأسبوعية</button>
+                <button class="tab-btn" data-tab="summary">ملخص الفترة</button>
+                <button class="tab-btn" data-tab="reports">التقارير</button>
+            </div>
+            
+            <div id="weekly" class="tab-content active">
+                <div class="week-selector" id="weekSelector"></div>
+                <div id="weeklyTableContainer">
+                    <table>
+                        <thead id="weeklyHead"></thead>
+                        <tbody id="weeklyBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="summary" class="tab-content">
+                <h3 style="text-align: center; margin-bottom: 20px; color: #374151;">ملخص نهاية الفترة</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم الطالبة</th>
+                                <th>المشاركة<br>(10)</th>
+                                <th>الواجبات<br>(10)</th>
+                                <th>الأنشطة<br>(10)</th>
+                                <th>المشاريع<br>(10)</th>
+                                <th>التقارير<br>(5)</th>
+                                <th>الاختبارات<br>(15)</th>
+                                <th>المجموع<br>(60)</th>
+                                <th>النسبة</th>
+                                <th>التقدير</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="reports" class="tab-content">
+                <h3 style="text-align: center; margin-bottom: 20px; color: #374151;">التقارير الإحصائية</h3>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h3>عدد الطالبات</h3>
+                        <div class="value" id="studentCount">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>متوسط الدرجات</h3>
+                        <div class="value" id="averageGrade">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>أعلى درجة</h3>
+                        <div class="value" id="highestGrade">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>أدنى درجة</h3>
+                        <div class="value" id="lowestGrade">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="bulkAddModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">إضافة مجموعة طالبات</h3>
+            <textarea id="bulkNames" style="width: 100%; height: 200px; padding: 10px; border: 1px solid #d1d5db; border-radius: 10px;" placeholder="أدخلي أسماء الطالبات، كل اسم في سطر منفصل"></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" id="confirmBulkBtn">إضافة الكل</button>
+                <button class="btn btn-light" id="cancelBulkBtn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ===== Application State =====
+const App = {
+    students: [],
+    currentWeek: 1,
+    currentTab: 'weekly'
+};
+
+// ===== Initialization =====
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+    attachEventListeners();
+    loadData();
+});
+
+function initializeApp() {
+    generateWeekSelector();
+    updateAllViews();
+}
+
+function attachEventListeners() {
+    // Main buttons
+    document.getElementById('addBtn').addEventListener('click', addStudent);
+    document.getElementById('bulkBtn').addEventListener('click', showBulkModal);
+    document.getElementById('saveBtn').addEventListener('click', saveData);
+    document.getElementById('excelBtn').addEventListener('click', exportToExcel);
+    document.getElementById('printBtn').addEventListener('click', printReport);
+    
+    // Modal buttons
+    document.getElementById('confirmBulkBtn').addEventListener('click', addBulkStudents);
+    document.getElementById('cancelBulkBtn').addEventListener('click', closeBulkModal);
+    
+    // Tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            switchTab(this.dataset.tab);
+        });
+    });
+    
+    // Select changes
+    ['gradeSelect', 'sectionSelect', 'periodSelect'].forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+            App.students = [];
+            loadData();
+        });
+    });
+    
+    // Enter key for student name input
+    document.getElementById('studentNameInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addStudent();
+    });
+}
+
+// ===== Student Management =====
+function addStudent() {
+    const nameInput = document.getElementById('studentNameInput');
+    const name = nameInput.value.trim();
+    
+    if (!name) {
+        alert('الرجاء إدخال اسم الطالبة');
+        return;
+    }
+    
+    const student = {
+        id: Date.now(),
+        name: name,
+        grades: createEmptyGrades(),
+        projects: 0,
+        reports: 0,
+        exams: 0
+    };
+    
+    App.students.push(student);
+    nameInput.value = '';
+    updateAllViews();
+    saveToLocalStorage();
+}
+
+function createEmptyGrades() {
+    return Array(7).fill().map(() => 
+        Array(5).fill().map(() => ({
+            participation: 0,
+            homework: 0,
+            activities: 0
+        }))
+    );
+}
+
+function deleteStudent(id) {
+    if (confirm('هل أنت متأكدة من حذف هذه الطالبة؟')) {
+        App.students = App.students.filter(s => s.id !== id);
+        updateAllViews();
+        saveToLocalStorage();
+    }
+}
+
+// ===== Bulk Add Functions =====
+function showBulkModal() {
+    document.getElementById('bulkAddModal').style.display = 'block';
+}
+
+function closeBulkModal() {
+    document.getElementById('bulkAddModal').style.display = 'none';
+    document.getElementById('bulkNames').value = '';
+}
+
+function addBulkStudents() {
+    const textarea = document.getElementById('bulkNames');
+    const names = textarea.value.split('\n').filter(name => name.trim());
+    
+    names.forEach(name => {
+        App.students.push({
+            id: Date.now() + Math.random(),
+            name: name.trim(),
+            grades: createEmptyGrades(),
+            projects: 0,
+            reports: 0,
+            exams: 0
+        });
+    });
+    
+    closeBulkModal();
+    updateAllViews();
+    saveToLocalStorage();
+}
+
+// ===== Week Management =====
+function generateWeekSelector() {
+    const selector = document.getElementById('weekSelector');
+    selector.innerHTML = '';
+    
+    for (let i = 1; i <= 7; i++) {
+        const btn = document.createElement('button');
+        btn.className = `week-btn ${i === 1 ? 'active' : ''}`;
+        btn.textContent = `الأسبوع ${i}`;
+        btn.addEventListener('click', () => selectWeek(i));
+        selector.appendChild(btn);
+    }
+}
+
+function selectWeek(week) {
+    App.currentWeek = week;
+    document.querySelectorAll('.week-btn').forEach((btn, index) => {
+        btn.classList.toggle('active', index + 1 === week);
+    });
+    updateWeeklyTable();
+}
+
+// ===== Tab Management =====
+function switchTab(tabName) {
+    App.currentTab = tabName;
+    
+    // Update buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+    
+    // Update content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.toggle('active', content.id === tabName);
+    });
+    
+    // Update view
+    if (tabName === 'weekly') updateWeeklyTable();
+    else if (tabName === 'summary') updateSummaryTable();
+    else if (tabName === 'reports') updateReports();
+}
+
+// ===== View Updates =====
+function updateAllViews() {
+    updateWeeklyTable();
+    updateSummaryTable();
+    updateReports();
+}
+
+function updateWeeklyTable() {
+    const thead = document.getElementById('weeklyHead');
+    const tbody = document.getElementById('weeklyBody');
+    const grade = document.getElementById('gradeSelect').options[document.getElementById('gradeSelect').selectedIndex].text;
+    const section = document.getElementById('sectionSelect').value;
+    
+    // Header
+    thead.innerHTML = `
+        <tr>
+            <th rowspan="3" style="width: 250px;">اسم الطالبة</th>
+            <th rowspan="3">الصف</th>
+            <th rowspan="3">الشعبة</th>
+            <th colspan="6" style="background: #00897B;">المشاركة (10)</th>
+            <th colspan="6" style="background: #006d5b;">الواجبات (10)</th>
+            <th colspan="6" style="background: #00a693;">الأنشطة (10)</th>
+            <th rowspan="3">حذف</th>
+        </tr>
+        <tr>
+            <th colspan="5">الأيام</th><th rowspan="2">المجموع</th>
+            <th colspan="5">الأيام</th><th rowspan="2">المجموع</th>
+            <th colspan="5">الأيام</th><th rowspan="2">المجموع</th>
+        </tr>
+        <tr>
+            ${[1,2,3,4,5].map(i => `<th>يوم ${i}</th>`).join('')}
+            ${[1,2,3,4,5].map(i => `<th>يوم ${i}</th>`).join('')}
+            ${[1,2,3,4,5].map(i => `<th>يوم ${i}</th>`).join('')}
+        </tr>`;
+    
+    // Body
+    tbody.innerHTML = App.students.map(student => {
+        let pTotal = 0, hTotal = 0, aTotal = 0;
+        let rowHTML = `
+            <tr>
+                <td><input type="text" class="student-name-input" value="${student.name}" 
+                    onchange="updateStudentName(${student.id}, this.value)"></td>
+                <td>${grade}</td>
+                <td>${section}</td>`;
+        
+        // Participation
+        for (let day = 0; day < 5; day++) {
+            const val = student.grades[App.currentWeek - 1][day].participation;
+            pTotal += val;
+            rowHTML += `<td><input type="number" class="grade-input" min="0" max="2" value="${val}"
+                onchange="updateGrade(${student.id}, ${App.currentWeek - 1}, ${day}, 'participation', this.value)"></td>`;
+        }
+        rowHTML += `<td><span class="total-badge">${pTotal}</span></td>`;
+        
+        // Homework
+        for (let day = 0; day < 5; day++) {
+            const val = student.grades[App.currentWeek - 1][day].homework;
+            hTotal += val;
+            rowHTML += `<td><input type="number" class="grade-input" min="0" max="2" value="${val}"
+                onchange="updateGrade(${student.id}, ${App.currentWeek - 1}, ${day}, 'homework', this.value)"></td>`;
+        }
+        rowHTML += `<td><span class="total-badge">${hTotal}</span></td>`;
+        
+        // Activities
+        for (let day = 0; day < 5; day++) {
+            const val = student.grades[App.currentWeek - 1][day].activities;
+            aTotal += val;
+            rowHTML += `<td><input type="number" class="grade-input" min="0" max="2" value="${val}"
+                onchange="updateGrade(${student.id}, ${App.currentWeek - 1}, ${day}, 'activities', this.value)"></td>`;
+        }
+        rowHTML += `<td><span class="total-badge">${aTotal}</span></td>`;
+        rowHTML += `<td><button class="delete-btn" onclick="deleteStudent(${student.id})">✕</button></td></tr>`;
+        
+        return rowHTML;
+    }).join('');
+}
+
+function updateSummaryTable() {
+    const tbody = document.getElementById('summaryBody');
+    
+    tbody.innerHTML = App.students.map(student => {
+        const totals = calculatePeriodTotals(student);
+        const total = totals.participation + totals.homework + totals.activities + 
+                     student.projects + student.reports + student.exams;
+        const percentage = (total / 60) * 100;
+        const grade = getGrade(percentage);
+        
+        return `
+            <tr>
+                <td>${student.name}</td>
+                <td>${totals.participation.toFixed(1)}</td>
+                <td>${totals.homework.toFixed(1)}</td>
+                <td>${totals.activities.toFixed(1)}</td>
+                <td><input type="number" class="grade-input" min="0" max="10" value="${student.projects}"
+                    onchange="updateFinalGrade(${student.id}, 'projects', this.value)"></td>
+                <td><input type="number" class="grade-input" min="0" max="5" value="${student.reports}"
+                    onchange="updateFinalGrade(${student.id}, 'reports', this.value)"></td>
+                <td><input type="number" class="grade-input" min="0" max="15" value="${student.exams}"
+                    onchange="updateFinalGrade(${student.id}, 'exams', this.value)"></td>
+                <td><span class="total-badge">${total.toFixed(1)}</span></td>
+                <td>${percentage.toFixed(1)}%</td>
+                <td>${grade}</td>
+                <td><button class="btn btn-info" style="padding: 5px 10px;" onclick="printStudentReport(${student.id})">📄 تقرير</button></td>
+            </tr>`;
+    }).join('');
+}
+
+function updateReports() {
+    if (App.students.length === 0) {
+        ['studentCount', 'averageGrade', 'highestGrade', 'lowestGrade'].forEach(id => {
+            document.getElementById(id).textContent = '0';
+        });
+        return;
+    }
+    
+    const grades = App.students.map(student => {
+        const totals = calculatePeriodTotals(student);
+        return totals.participation + totals.homework + totals.activities + 
+               student.projects + student.reports + student.exams;
+    });
+    
+    document.getElementById('studentCount').textContent = App.students.length;
+    document.getElementById('averageGrade').textContent = (grades.reduce((a, b) => a + b, 0) / grades.length).toFixed(1);
+    document.getElementById('highestGrade').textContent = Math.max(...grades).toFixed(1);
+    document.getElementById('lowestGrade').textContent = Math.min(...grades).toFixed(1);
+}
+
+// ===== Grade Management =====
+function updateGrade(studentId, week, day, subject, value) {
+    const student = App.students.find(s => s.id === studentId);
+    if (student) {
+        student.grades[week][day][subject] = Math.min(2, Math.max(0, parseInt(value) || 0));
+        updateAllViews();
+        saveToLocalStorage();
+    }
+}
+
+function updateStudentName(studentId, newName) {
+    const student = App.students.find(s => s.id === studentId);
+    if (student) {
+        student.name = newName;
+        saveToLocalStorage();
+    }
+}
+
+function updateFinalGrade(studentId, type, value) {
+    const student = App.students.find(s => s.id === studentId);
+    if (student) {
+        const max = {projects: 10, reports: 5, exams: 15}[type];
+        student[type] = Math.min(max, Math.max(0, parseFloat(value) || 0));
+        updateSummaryTable();
+        updateReports();
+        saveToLocalStorage();
+    }
+}
+
+// ===== Calculations =====
+function calculatePeriodTotals(student) {
+    let totals = {participation: 0, homework: 0, activities: 0};
+    
+    for (let week = 0; week < 7; week++) {
+        for (let day = 0; day < 5; day++) {
+            totals.participation += student.grades[week][day].participation;
+            totals.homework += student.grades[week][day].homework;
+            totals.activities += student.grades[week][day].activities;
+        }
+    }
+    
+    return {
+        participation: totals.participation / 7,
+        homework: totals.homework / 7,
+        activities: totals.activities / 7
+    };
+}
+
+function getGrade(percentage) {
+    if (percentage >= 90) return 'ممتاز';
+    if (percentage >= 80) return 'جيد جداً';
+    if (percentage >= 70) return 'جيد';
+    if (percentage >= 60) return 'مقبول';
+    return 'ضعيف';
+}
+
+// ===== Storage =====
+function saveToLocalStorage() {
+    const key = getStorageKey();
+    localStorage.setItem(key, JSON.stringify({
+        students: App.students,
+        lastUpdated: new Date().toISOString()
+    }));
+}
+
+function loadData() {
+    const key = getStorageKey();
+    const data = localStorage.getItem(key);
+    
+    if (data) {
+        const parsed = JSON.parse(data);
+        App.students = parsed.students || [];
+        updateAllViews();
+    }
+}
+
+function getStorageKey() {
+    const grade = document.getElementById('gradeSelect').value;
+    const section = document.getElementById('sectionSelect').value;
+    const period = document.getElementById('periodSelect').value;
+    return `tracking_${grade}_${section}_${period}`;
+}
+
+// ===== Export & Print =====
+function saveData() {
+    saveToLocalStorage();
+    showMessage('تم حفظ البيانات بنجاح!');
+}
+
+function exportToExcel() {
+    if (App.students.length === 0) {
+        alert('لا توجد بيانات للتصدير');
+        return;
+    }
+    showMessage('جاري تطوير ميزة التصدير...');
+}
+
+function printReport() {
+    window.print();
+}
+
+function printStudentReport(studentId) {
+    const student = App.students.find(s => s.id === studentId);
+    if (!student) return;
+    
+    const totals = calculatePeriodTotals(student);
+    const total = totals.participation + totals.homework + totals.activities + 
+                 student.projects + student.reports + student.exams;
+    const percentage = (total / 60) * 100;
+    const gradeText = getGrade(percentage);
+    
+    // Try to open a new window
+    const printWindow = window.open('', 'printReport', 'width=800,height=600');
+    
+    // Check if window was blocked
+    if (!printWindow) {
+        alert('تم حظر النافذة المنبثقة. الرجاء السماح بالنوافذ المنبثقة لهذا الموقع.');
+        return;
+    }
+    
+    // Create the HTML content
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html dir="rtl" lang="ar">
+        <head>
+            <meta charset="UTF-8">
+            <title>تقرير ${student.name}</title>
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    padding: 20px; 
+                    direction: rtl;
+                }
+                .header { 
+                    text-align: center; 
+                    margin-bottom: 30px;
+                }
+                h1 { 
+                    color: #00897B; 
+                    margin-bottom: 10px;
+                }
+                .info-box { 
+                    background: #E0F2F1; 
+                    padding: 15px; 
+                    border-radius: 10px; 
+                    margin: 20px 0;
+                }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin: 20px 0;
+                }
+                th, td { 
+                    padding: 10px; 
+                    border: 1px solid #ddd; 
+                    text-align: center;
+                }
+                th { 
+                    background: #00897B; 
+                    color: white;
+                }
+                .result { 
+                    text-align: center; 
+                    padding: 20px; 
+                    background: ${percentage >= 90 ? '#10b981' : percentage >= 80 ? '#00897B' : percentage >= 70 ? '#eab308' : '#ef4444'}; 
+                    color: white; 
+                    border-radius: 10px;
+                    margin: 20px 0;
+                }
+                .notes { 
+                    background: #f5f5f5; 
+                    padding: 15px; 
+                    border-radius: 10px; 
+                    margin: 20px 0;
+                }
+                .print-btn {
+                    display: block;
+                    margin: 20px auto;
+                    padding: 10px 30px;
+                    background: #00897B;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                }
+                @media print { 
+                    .print-btn { display: none; }
+                }
+            </style>
+        <meta name="theme-color" content="#00897B">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+        <body>
+            <div class="header">
+                <h1>تقرير متابعة الطالبة</h1>
+                <h2>الفترة ${document.getElementById('periodSelect').value === '1' ? 'الأولى' : 'الثانية'}</h2>
+            </div>
+            
+            <div class="info-box">
+                <h3>معلومات الطالبة</h3>
+                <p><strong>الاسم:</strong> ${student.name}</p>
+                <p><strong>الصف:</strong> ${document.getElementById('gradeSelect').options[document.getElementById('gradeSelect').selectedIndex].text}</p>
+                <p><strong>الشعبة:</strong> ${document.getElementById('sectionSelect').value}</p>
+            </div>
+            
+            <table>
+                <tr>
+                    <th>البند</th>
+                    <th>الدرجة المستحقة</th>
+                    <th>الدرجة الكاملة</th>
+                </tr>
+                <tr>
+                    <td>المشاركة</td>
+                    <td>${totals.participation.toFixed(1)}</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>الواجبات</td>
+                    <td>${totals.homework.toFixed(1)}</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>الأنشطة والمهام الأدائية</td>
+                    <td>${totals.activities.toFixed(1)}</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>المشاريع</td>
+                    <td>${student.projects}</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>التقارير</td>
+                    <td>${student.reports}</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>الاختبارات</td>
+                    <td>${student.exams}</td>
+                    <td>15</td>
+                </tr>
+                <tr style="background: #00897B; color: white;">
+                    <th>المجموع</th>
+                    <th>${total.toFixed(1)}</th>
+                    <th>60</th>
+                </tr>
+            </table>
+            
+            <div class="result">
+                <h2>النسبة: ${percentage.toFixed(1)}%</h2>
+                <h2>التقدير: ${gradeText}</h2>
+            </div>
+            
+            <div class="notes">
+                <h4>ملاحظات للوالدين:</h4>
+                <p>${percentage >= 90 ? 'أداء متميز! ابنتكم تظهر التزاماً رائعاً ومشاركة فعالة. نشجعكم على الاستمرار في دعمها.' :
+                     percentage >= 80 ? 'أداء جيد جداً. ابنتكم تبذل جهداً ملحوظاً. مع قليل من التحسين يمكنها الوصول للتميز.' :
+                     percentage >= 70 ? 'أداء جيد. هناك مجال للتحسين خاصة في بعض الجوانب. نرجو متابعتها في أداء الواجبات.' :
+                     percentage >= 60 ? 'أداء مقبول. تحتاج ابنتكم لمزيد من المتابعة والدعم في الدراسة.' :
+                     'يحتاج الأداء لتحسين عاجل. نرجو التواصل مع المدرسة لوضع خطة دعم مناسبة.'}</p>
+            </div>
+            
+            <p style="text-align: center; margin-top: 30px;">
+                التاريخ: ${new Date().toLocaleDateString('ar-SA')}
+            </p>
+            
+            <button class="print-btn" onclick="window.print(); return false;">طباعة / حفظ كـ PDF</button>
+        <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js').catch(console.error);
+    });
+  }
+</script>
+</body>
+        </html>
+    `;
+    
+    // Write the content to the new window
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+}
+
+function showMessage(msg) {
+    const msgDiv = document.createElement('div');
+    msgDiv.style.cssText = `
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        background: #10b981; color: white; padding: 15px 30px;
+        border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        z-index: 10000; font-weight: bold;`;
+    msgDiv.textContent = msg;
+    document.body.appendChild(msgDiv);
+    setTimeout(() => msgDiv.remove(), 3000);
+}
+
+// Make functions globally accessible for inline handlers
+window.updateGrade = updateGrade;
+window.updateStudentName = updateStudentName;
+window.updateFinalGrade = updateFinalGrade;
+window.deleteStudent = deleteStudent;
+window.printStudentReport = printStudentReport;
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js').catch(console.error);
+    });
+  }
+</script>
+</body>
+</html>
